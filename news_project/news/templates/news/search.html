@@ -1,0 +1,45 @@
+{% extends 'news/base.html' %}
+
+{% load static %}
+
+{% block title %}Search News{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Search for News Articles</h1>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form id="search-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+    <a href="{% url 'results' %}" id="view-previous">View Previous Searches</a>
+    
+    <div id="search-results" style="display:none;">
+        <h1>Your Searches</h1>
+        <ul id="search-list">
+            {% for search in searches %}
+                <li>
+                    <h2>{{ search.keyword }} ({{ search.created_at }})</h2>
+                    <a href="{% url 'refresh_search' search.id %}">Refresh</a>
+                    <ul>
+                        {% for article in search.article_set.all|dictsortreversed:"published_at" %}
+                            <li>
+                                <a href="{{ article.url }}" target="_blank">{{ article.title }}</a>
+                                <p>{{ article.published_at }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

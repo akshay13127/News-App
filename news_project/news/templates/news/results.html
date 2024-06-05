@@ -1,0 +1,24 @@
+{% extends 'news/base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<h1>Your Searches</h1>
+<ul>
+    {% for search in searches %}
+        <li>
+            <h2>{{ search.keyword }} ({{ search.created_at }})</h2>
+            <a href="{% url 'refresh_search' search.id %}">Refresh</a>
+            <ul>
+                {% for article in search.article_set.all|dictsortreversed:"published_at" %}
+                    <li>
+                        <a href="{{ article.url }}" target="_blank">{{ article.title }}</a>
+                        <p>{{ article.published_at }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'search' %}">Perform a New Search</a>
+{% endblock %}
